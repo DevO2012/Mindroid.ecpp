@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-#include <pthread.h>
 #include "mindroid/os/MessageQueue.h"
 #include "mindroid/os/Message.h"
 #include "mindroid/os/Clock.h"
@@ -24,51 +23,52 @@
 namespace mindroid {
 
 MessageQueue::MessageQueue() :
-	mHeadMessage(NULL),
-	mCondVar(mCondVarLock),
-	mLockMessageQueue(false) {
+		mHeadMessage(NULL),
+		mCondVar(mCondVarLock),
+		mLockMessageQueue(false) {
 }
 
 MessageQueue::~MessageQueue() {
 }
 
 bool MessageQueue::enqueueMessage(Message& message, uint64_t execTimestamp) {
-	AutoLock autoLock(mCondVarLock);
-	if (mLockMessageQueue) {
-		return false;
-	}
 	{
-		AutoLock autoLock(message.mLock);
-		if (message.mExecTimestamp != 0) {
+		AutoLock autoLock(mCondVarLock);
+		if (mLockMessageQueue) {
 			return false;
 		}
-		message.mExecTimestamp = execTimestamp;
-	}
-	if (message.mHandler == NULL) {
-		mLockMessageQueue = true;
-	}
-	Message* curMessage = mHeadMessage;
-	if (curMessage == NULL || execTimestamp < curMessage->mExecTimestamp) {
-		message.mNextMessage = curMessage;
-		mHeadMessage = &message;
-		mCondVar.notify();
-	} else {
-		Message* prevMessage = NULL;
-		while (curMessage != NULL && curMessage->mExecTimestamp <= execTimestamp) {
-			prevMessage = curMessage;
-			curMessage = curMessage->mNextMessage;
+		{
+			AutoLock autoLock(message.mLock);
+			if (message.mExecTimestamp != 0) {
+				return false;
+			}
+			message.mExecTimestamp = execTimestamp;
 		}
-		message.mNextMessage = prevMessage->mNextMessage;
-		prevMessage->mNextMessage = &message;
-		mCondVar.notify();
+		if (message.mHandler == NULL) {
+			mLockMessageQueue = true;
+		}
+		Message* curMessage = mHeadMessage;
+		if (curMessage == NULL || execTimestamp < curMessage->mExecTimestamp) {
+			message.mNextMessage = curMessage;
+			mHeadMessage = &message;
+		} else {
+			Message* prevMessage = NULL;
+			while (curMessage != NULL && curMessage->mExecTimestamp <= execTimestamp) {
+				prevMessage = curMessage;
+				curMessage = curMessage->mNextMessage;
+			}
+			message.mNextMessage = prevMessage->mNextMessage;
+			prevMessage->mNextMessage = &message;
+		}
 	}
+	mCondVar.notify();
 	return true;
 }
 
 Message& MessageQueue::dequeueMessage() {
 	while (true) {
-		AutoLock autoLock(mCondVarLock);
 		uint64_t now = Clock::monotonicTime();
+		AutoLock autoLock(mCondVarLock);
 		Message* message = getNextMessage(now);
 		if (message != NULL) {
 			return *message;
@@ -76,10 +76,8 @@ Message& MessageQueue::dequeueMessage() {
 
 		if (mHeadMessage != NULL) {
 			if (mHeadMessage->mExecTimestamp - now > 0) {
-				timespec absExecTimestamp;
-				absExecTimestamp.tv_sec = mHeadMessage->mExecTimestamp / 1000000000LL;
-				absExecTimestamp.tv_nsec = mHeadMessage->mExecTimestamp % 1000000000LL;
-				mCondVar.wait(absExecTimestamp);
+				uint32_t timeout = (mHeadMessage->mExecTimestamp - now); // milliseconds
+				mCondVar.wait(timeout);
 			}
 		} else {
 			mCondVar.wait();

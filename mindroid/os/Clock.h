@@ -18,7 +18,6 @@
 #define MINDROID_CLOCK_H_
 
 #include <stdint.h>
-#include "time.h"
 #include "mindroid/util/Utils.h"
 
 #define CLOCK_REALTIME  0
@@ -29,8 +28,12 @@ namespace mindroid {
 class Clock
 {
 public:
-	static uint64_t monotonicTime(); // nanoseconds
-	static uint64_t realTime(); // nanoseconds
+	/**
+	  * The monotonic time never goes backwards and never is zero.
+	  */
+	static uint64_t monotonicTime(); // milliseconds
+
+	static uint64_t realTime(); // milliseconds
 
 private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Clock)

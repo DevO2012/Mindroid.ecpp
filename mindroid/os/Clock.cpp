@@ -15,19 +15,28 @@
  */
 
 #include "mindroid/os/Clock.h"
+#include <cmsis_os.h>
 
 namespace mindroid {
 
 uint64_t Clock::monotonicTime() {
-	timespec now;
-	clock_gettime(CLOCK_MONOTONIC, &now);
-	return (((uint64_t)now.tv_sec * 1000000000LL) + now.tv_nsec);
+	static uint32_t base = 0;
+	static uint32_t offset = 0;
+	static const uint32_t KERNEL_SYS_TICK_DIVIDER = osKernelSysTickMicroSec(1000);
+	
+	uint32_t now = osKernelSysTick() / KERNEL_SYS_TICK_DIVIDER;
+	if (now == 0 && base == 0) {
+		now = 1;
+	}
+	if (offset > now) {
+		base++;
+	}
+	offset = now;
+	return ((uint64_t) base << 32) | offset;
 }
 
 uint64_t Clock::realTime() {
-	timespec now;
-	clock_gettime(CLOCK_REALTIME, &now);
-	return (((uint64_t)now.tv_sec * 1000000000LL) + now.tv_nsec);
+	return monotonicTime();
 }
 
 } /* namespace mindroid */

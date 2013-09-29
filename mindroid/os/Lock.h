@@ -18,7 +18,7 @@
 #define MINDROID_LOCK_H_
 
 #include <stdint.h>
-#include <pthread.h>
+#include <cmsis_os.h>
 #include "mindroid/util/Utils.h"
 
 namespace mindroid {
@@ -32,9 +32,10 @@ public:
 	void unlock();
 
 private:
-	pthread_mutex_t mMutex;
-
-	friend class CondVar;
+	osMutexId mMutexId; 
+	// osMutexDef macro body in cmsis_os.h
+	uint32_t mMutexData[3];
+	osMutexDef_t mMutex;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Lock)
 };

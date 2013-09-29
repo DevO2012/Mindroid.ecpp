@@ -17,7 +17,7 @@
 #ifndef MINDROID_THREAD_H_
 #define MINDROID_THREAD_H_
 
-#include <pthread.h>
+#include <cmsis_os.h>
 #include "mindroid/os/Runnable.h"
 #include "mindroid/util/Utils.h"
 
@@ -36,13 +36,14 @@ public:
 	void interrupt();
 	bool isInterrupted() const;
 	void join() const;
-	void setSchedulingParams(int32_t policy, int32_t priority);
 
 private:
-	static void* exec(void* args);
+	static void exec(const void* args);
 
 	Runnable* mRunnable;
-	pthread_t mThread;
+	osThreadId mThreadId;
+	// osThreadDef macro body in cmsis_os.h
+	osThreadDef_t mThread;
 	bool mInterrupted;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Thread)

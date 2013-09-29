@@ -14,44 +14,50 @@
  * limitations under the License.
  */
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
 #include "mindroid/os/Thread.h"
+#include <assert.h>
 
 namespace mindroid {
 
 Thread::Thread() :
-	mRunnable(this),
-	mInterrupted(false) {
+		mRunnable(this),
+		mThreadId(NULL),
+		mInterrupted(false) {
+	mThread.pthread = &Thread::exec;
+	mThread.tpriority = osPriorityNormal;
+	mThread.instances = 1;
+	mThread.stacksize = 0;
 }
 
 Thread::Thread(Runnable* runnable) :
-	mRunnable(runnable),
-	mInterrupted(false) {
+		mRunnable(runnable),
+		mThreadId(NULL),
+		mInterrupted(false) {
+	mThread.pthread = &Thread::exec;
+	mThread.tpriority = osPriorityNormal;
+	mThread.instances = 1;
+	mThread.stacksize = 0;
 }
 
 bool Thread::start() {
-	int32_t errorCode = -1;
 	if (mRunnable != NULL) {
-		errorCode = pthread_create(&mThread, NULL, &Thread::exec, this);
+		mThreadId = osThreadCreate(&mThread, this);
 	}
-	return (errorCode == 0);
+	return (mThreadId != NULL);
 }
 
 void Thread::sleep(uint32_t milliseconds) {
-	::usleep((milliseconds % 1000) * 1000);
-	::sleep(milliseconds / 1000);
+	osDelay(milliseconds);
 }
 
 void Thread::join() const {
-	pthread_join(mThread, NULL);
+	bool notYetImplemented = true;
+	assert(!notYetImplemented);
 }
 
-void* Thread::exec(void* args) {
+void Thread::exec(const void* args) {
 	Thread* const self = (Thread*) args;
 	self->mRunnable->run();
-	return NULL;
 }
 
 void Thread::interrupt() {
@@ -60,13 +66,6 @@ void Thread::interrupt() {
 
 bool Thread::isInterrupted() const {
 	return mInterrupted;
-}
-
-void Thread::setSchedulingParams(int32_t policy, int32_t priority) {
-	sched_param schedulingParameters;
-	memset(&schedulingParameters, 0, sizeof(schedulingParameters));
-	schedulingParameters.sched_priority = priority;
-	pthread_setschedparam(mThread, policy, &schedulingParameters);
 }
 
 } /* namespace mindroid */

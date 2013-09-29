@@ -1,4 +1,6 @@
-Debug
 *.o
-.settings
-
+*.lib
+.bake
+Debug
+Debug_Main
+.bake
