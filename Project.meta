@@ -1,0 +1,24 @@
+Project {
+
+  LibraryConfig lib {
+    Files "**/*.cpp"
+	
+    IncludeDir "."
+    IncludeDir "../RTX"
+    IncludeDir "$(KEIL_ARM_TOOLS)/CMSIS/Include"	
+	IncludeDir "$(KEIL_ARM_TOOLS)/RV31/INC"
+    IncludeDir "$(KEIL_ARM_TOOLS)/INC/NXP/LPC17xx"		
+
+    Toolchain {
+	  Compiler CPP {
+	    Flags "--cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork"
+	  }
+	  Compiler C {
+	    Flags "--cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork"
+	  }
+	  Compiler ASM {
+	    Flags "--cpu Cortex-M3 --pd \"__MICROLIB SETA 1\" -g --16 --apcs=interwork"
+	  }	
+	}
+  }
+}
