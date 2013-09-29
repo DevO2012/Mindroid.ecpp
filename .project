@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Android Messaging and Concurrency</name>
+	<name>OsekAndroidRT</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -23,7 +23,7 @@
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildArguments</key>
-					<value></value>
+					<value>${BUILD_ARGS}</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildCommand</key>
@@ -31,7 +31,7 @@
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildLocation</key>
-					<value>${workspace_loc:/Android Messaging/Debug}</value>
+					<value>${workspace_loc:/OsekAndroidRT/Debug_Fado}</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.cleanBuildTarget</key>
@@ -69,15 +69,14 @@
 		</buildCommand>
 		<buildCommand>
 			<name>org.eclipse.cdt.managedbuilder.core.ScannerConfigBuilder</name>
-			<triggers>full,incremental,</triggers>
 			<arguments>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>org.eclipse.cdt.core.cnature</nature>
 		<nature>org.eclipse.cdt.core.ccnature</nature>
-		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
+		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
+		<nature>org.eclipse.cdt.core.cnature</nature>
 	</natures>
 </projectDescription>

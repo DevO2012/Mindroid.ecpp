@@ -1,4 +1,3 @@
+.bake
 Debug
-*.o
-.settings
-
+Debug_Main

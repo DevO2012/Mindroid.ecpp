@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 #include "mindroid/util/Log.h"
+
+extern "C" int vsnprintf(char* msg, size_t size, const char* format, va_list args);
 
 namespace mindroid {
 

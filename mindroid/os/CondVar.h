@@ -18,7 +18,7 @@
 #define MINDROID_CONDVAR_H_
 
 #include <stdint.h>
-#include <pthread.h>
+#include <os.h>
 #include "mindroid/util/Utils.h"
 
 namespace mindroid {
@@ -27,18 +27,22 @@ class Lock;
 
 class CondVar {
 public:
-	CondVar(Lock& lock);
-	~CondVar();
+	CondVar(Lock& lock, TaskType taskId, AlarmType alarmId, EventMaskType eventId);
+	~CondVar() {}
 	void wait();
 	void wait(uint32_t timeout);
-	void wait(timespec& absTimestamp);
+
+	/**
+	 * Never hold mCondVarLock while calling notify.
+	 */
 	void notify();
 	void notifyAll();
 
 private:
-	pthread_cond_t mCondVar;
-	pthread_condattr_t mCondVarAttributes;
 	Lock& mCondVarLock;
+	TaskType mTaskId;
+	AlarmType mAlarmId;
+	EventMaskType mEventId;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(CondVar)
 };

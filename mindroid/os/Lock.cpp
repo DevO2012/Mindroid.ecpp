@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-#include <stdlib.h>
 #include "mindroid/os/Lock.h"
 #include "mindroid/os/Clock.h"
+#include <os.h>
 
 namespace mindroid {
 
-Lock::Lock() {
-	pthread_mutex_init(&mMutex, NULL);
-}
-
-Lock::~Lock() {
-	pthread_mutex_destroy(&mMutex);
-}
-
 bool Lock::lock() {
-	return (pthread_mutex_lock(&mMutex) == 0);
+	SuspendOSInterrupts();
+	return true;
 }
 
 void Lock::unlock() {
-	pthread_mutex_unlock(&mMutex);
+	ResumeOSInterrupts();
 }
 
 } /* namespace mindroid */

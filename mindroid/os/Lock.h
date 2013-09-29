@@ -18,7 +18,6 @@
 #define MINDROID_LOCK_H_
 
 #include <stdint.h>
-#include <pthread.h>
 #include "mindroid/util/Utils.h"
 
 namespace mindroid {
@@ -26,14 +25,11 @@ namespace mindroid {
 class Lock
 {
 public:
-	Lock();
-	~Lock();
+	Lock() {}
 	bool lock();
 	void unlock();
 
 private:
-	pthread_mutex_t mMutex;
-
 	friend class CondVar;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Lock)

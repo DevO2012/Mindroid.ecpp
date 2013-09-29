@@ -14,47 +14,50 @@
  * limitations under the License.
  */
 
-#include <stdlib.h>
 #include "mindroid/os/CondVar.h"
 #include "mindroid/os/Lock.h"
 #include "mindroid/os/Clock.h"
+#include <assert.h>
 
 namespace mindroid {
 
-CondVar::CondVar(Lock& lock) :
-	mCondVarLock(lock) {
-	pthread_condattr_init(&mCondVarAttributes);
-	pthread_condattr_setclock(&mCondVarAttributes, CLOCK_MONOTONIC);
-	pthread_cond_init(&mCondVar, &mCondVarAttributes);
-}
-
-CondVar::~CondVar() {
-	pthread_cond_destroy(&mCondVar);
-	pthread_condattr_destroy(&mCondVarAttributes);
+CondVar::CondVar(Lock& lock, TaskType taskId, AlarmType alarmId, EventMaskType eventId) :
+		mCondVarLock(lock),
+		mTaskId(taskId),
+		mAlarmId(alarmId),
+		mEventId(eventId) {
 }
 
 void CondVar::wait() {
-	pthread_cond_wait(&mCondVar, &mCondVarLock.mMutex);
+	mCondVarLock.unlock();
+	Schedule();
+	WaitEvent(mEventId);
+	EventMaskType event;
+	GetEvent(mTaskId, &event);
+	ClearEvent(event);
+	mCondVarLock.lock();
 }
 
 void CondVar::wait(uint32_t timeout) {
-	uint64_t timeoutTimestamp = Clock::monotonicTime() + timeout * 1000000LL;
-	timespec absTimestamp;
-	absTimestamp.tv_sec = timeoutTimestamp / 1000000000LL;
-	absTimestamp.tv_nsec = timeoutTimestamp % 1000000000LL;
-	wait(absTimestamp);
-}
-
-void CondVar::wait(timespec& absTimestamp) {
-	pthread_cond_timedwait(&mCondVar, &mCondVarLock.mMutex, &absTimestamp);
+	mCondVarLock.unlock();
+	assert(timeout > 0);
+    SetRelAlarm(mAlarmId, timeout, 0);
+	Schedule();
+	WaitEvent(mEventId);
+    CancelAlarm(mAlarmId);
+	EventMaskType event;
+	GetEvent(mTaskId, &event);
+	ClearEvent(event);
+	mCondVarLock.lock();
 }
 
 void CondVar::notify() {
-	pthread_cond_signal(&mCondVar);
+	SetEvent(mTaskId, mEventId);
 }
 
 void CondVar::notifyAll() {
-	pthread_cond_broadcast(&mCondVar);
+	bool notYetImplemented = true;
+	assert(!notYetImplemented);
 }
 
 } /* namespace mindroid */

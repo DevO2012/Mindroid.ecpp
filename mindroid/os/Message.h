@@ -33,8 +33,6 @@ public:
 	Message(Handler& handler, int16_t what, int32_t arg1, int32_t arg2);
 	Message(Handler& handler, int16_t what, void* obj);
 
-	virtual ~Message() {}
-
     static bool obtain(Message& message, Handler& handler);
     static bool obtain(Message& message, Handler& handler, int16_t what);
     static bool obtain(Message& message, Handler& handler, int16_t what, int32_t arg1, int32_t arg2);
@@ -64,7 +62,7 @@ private:
     }
 
     mutable Lock mLock;
-    uint64_t mExecTimestamp; // nanoseconds
+    uint64_t mExecTimestamp; // milliseconds
     Handler* mHandler;
     Message* mNextMessage;
 

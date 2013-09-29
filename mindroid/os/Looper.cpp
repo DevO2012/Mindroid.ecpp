@@ -18,57 +18,63 @@
 #include "mindroid/os/Handler.h"
 #include "mindroid/os/Message.h"
 #include <new>
+#include <os.h>
 #include <assert.h>
 
 namespace mindroid {
 
-pthread_once_t Looper::sTlsOneTimeInitializer = PTHREAD_ONCE_INIT;
-pthread_key_t Looper::sTlsKey;
 uint8_t Looper::sLooperHeapMemory[MAX_NUM_LOOPERS * sizeof(Looper)];
-Looper* Looper::sLoopers[] = { 0L };
+Looper* Looper::sLoopers[MAX_NUM_LOOPERS] = { NULL };
+TaskType Looper::sLooperThreadIds[MAX_NUM_LOOPERS] = { NULL };
 int Looper::sNumLoopers = 0;
 Lock Looper::sLock;
 
-Looper::Looper() {
+Looper::Looper(TaskType taskId, AlarmType alarmId, EventMaskType eventId) :
+		mMessageQueue(taskId, alarmId, eventId) {
 }
 
-void Looper::init() {
-	pthread_key_create(&sTlsKey, Looper::finalize);
-}
-
-void Looper::finalize(void* looper) {
-}
-
-bool Looper::prepare() {
-	pthread_once(&sTlsOneTimeInitializer, Looper::init);
-	Looper* looper = (Looper*) pthread_getspecific(sTlsKey);
-	if (looper == NULL) {
-		AutoLock autoLock(sLock);
-		assert(sNumLoopers < MAX_NUM_LOOPERS);
-		int i = sNumLoopers;
-		Looper* looper = reinterpret_cast<Looper*>(sLooperHeapMemory + i * sizeof(Looper));
-		new (looper) Looper();
-		if (looper == NULL) {
-			return false;
-		} else {
-			if (pthread_setspecific(sTlsKey, looper) != 0) {
-				return false;
-			} else {
-				sLoopers[i] = looper;
-				sNumLoopers++;
-				return true;
-			}
+bool Looper::prepare(TaskType taskId, AlarmType alarmId, EventMaskType eventId) {
+	TaskType threadId;
+	GetTaskID(&threadId);
+	int i = 0;
+	for (; i < MAX_NUM_LOOPERS; i++) {
+		if (sLooperThreadIds[i] == threadId) {
+			break;
 		}
-	} else {
-		// There should be only one Looper per thread.
+	}
+	AutoLock autoLock(sLock);
+	assert(sNumLoopers < MAX_NUM_LOOPERS);
+	if (i >= MAX_NUM_LOOPERS) {
+		i = sNumLoopers;
+	}
+	if (sLoopers[i] == NULL) {
+		Looper* looper = reinterpret_cast<Looper*>(sLooperHeapMemory + i * sizeof(Looper));
+		new (looper) Looper(taskId, alarmId, eventId);
+		sLoopers[i] = looper;
+		sLooperThreadIds[i] = threadId;
+		sNumLoopers++;
+		return true;
+	}  else {
+		// There should be only one Looper per task.
 		return false;
 	}
 }
 
 Looper* Looper::myLooper() {
-	pthread_once(&sTlsOneTimeInitializer, Looper::init);
-	Looper* looper = (Looper*) pthread_getspecific(sTlsKey);
-	return looper;
+	TaskType threadId;
+	GetTaskID(&threadId);
+	AutoLock autoLock(sLock);
+	int i = 0;
+	for (; i < sNumLoopers; i++) {
+		if (sLooperThreadIds[i] == threadId) {
+			break;
+		}
+	}
+	if (i < sNumLoopers) {
+		return sLoopers[i];
+	} else {
+		return NULL;
+	}
 }
 
 void Looper::loop() {

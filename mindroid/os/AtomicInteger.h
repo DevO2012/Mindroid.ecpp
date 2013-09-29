@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 #include "mindroid/util/Utils.h"
-#include "mindroid/os/Lock.h"
 
 namespace mindroid {
 
