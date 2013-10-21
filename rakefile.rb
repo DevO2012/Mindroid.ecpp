@@ -43,10 +43,10 @@ task :compile => [:ccobj]
 
 desc "Create archive"
 task :archive do
-  sh "#{AR} #{AROPTS} --create #{PROJECT}.lib mindroid/os/*.o mindroid/util/*.o"
+  sh "#{AR} #{AROPTS} --create #{PROJECT}.lib mindroid/app/*.o mindroid/os/*.o mindroid/util/*.o"
 end
 
-CLEAN.include('mindroid/os/*.o').include('mindroid/util/*.o').include("#{PROJECT}.lib")
+CLEAN.include('mindroid/app/*.o').include('mindroid/os/*.o').include('mindroid/util/*.o').include("#{PROJECT}.lib")
 CLOBBER.include("#{PROJECT}.axf")
 
 desc "Build #{PROJECT}"
