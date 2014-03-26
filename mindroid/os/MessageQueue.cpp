@@ -25,53 +25,58 @@ namespace mindroid {
 MessageQueue::MessageQueue() :
 		mHeadMessage(NULL),
 		mCondVar(mCondVarLock),
-		mLockMessageQueue(false) {
+		mQuiting(false) {
 }
 
 MessageQueue::~MessageQueue() {
 }
 
 bool MessageQueue::enqueueMessage(Message& message, uint64_t execTimestamp) {
+	if (message.mHandler == NULL) {
+		return false;
+	}
+	if (execTimestamp == 0) {
+		return false;
+	}
+
+	AutoLock autoLock(mCondVarLock);
 	{
-		AutoLock autoLock(mCondVarLock);
-		if (mLockMessageQueue) {
+		AutoLock autoLock(message.mLock);
+		if (message.mExecTimestamp != 0) {
 			return false;
 		}
-		{
-			AutoLock autoLock(message.mLock);
-			if (message.mExecTimestamp != 0) {
-				return false;
-			}
-			message.mExecTimestamp = execTimestamp;
+		message.mExecTimestamp = execTimestamp;
+	}
+	if (mQuiting) {
+		return false;
+	}
+	Message* curMessage = mHeadMessage;
+	if (curMessage == NULL || execTimestamp < curMessage->mExecTimestamp) {
+		message.mNextMessage = curMessage;
+		mHeadMessage = &message;
+	} else {
+		Message* prevMessage = NULL;
+		while (curMessage != NULL && curMessage->mExecTimestamp <= execTimestamp) {
+			prevMessage = curMessage;
+			curMessage = curMessage->mNextMessage;
 		}
-		if (message.mHandler == NULL) {
-			mLockMessageQueue = true;
-		}
-		Message* curMessage = mHeadMessage;
-		if (curMessage == NULL || execTimestamp < curMessage->mExecTimestamp) {
-			message.mNextMessage = curMessage;
-			mHeadMessage = &message;
-		} else {
-			Message* prevMessage = NULL;
-			while (curMessage != NULL && curMessage->mExecTimestamp <= execTimestamp) {
-				prevMessage = curMessage;
-				curMessage = curMessage->mNextMessage;
-			}
-			message.mNextMessage = prevMessage->mNextMessage;
-			prevMessage->mNextMessage = &message;
-		}
+		message.mNextMessage = prevMessage->mNextMessage;
+		prevMessage->mNextMessage = &message;
 	}
 	mCondVar.notify();
 	return true;
 }
 
-Message& MessageQueue::dequeueMessage() {
+Message* MessageQueue::dequeueMessage(Message& message) {
 	while (true) {
-		uint64_t now = Clock::monotonicTime();
 		AutoLock autoLock(mCondVarLock);
-		Message* message = getNextMessage(now);
-		if (message != NULL) {
-			return *message;
+		if (mQuiting) {
+			return NULL;
+		}
+
+		uint64_t now = Clock::monotonicTime();
+		if (getNextMessage(now, message) != NULL) {
+			return &message;
 		}
 
 		if (mHeadMessage != NULL) {
@@ -85,12 +90,14 @@ Message& MessageQueue::dequeueMessage() {
 	}
 }
 
-Message* MessageQueue::getNextMessage(uint64_t now) {
-	Message* message = mHeadMessage;
-	if (message != NULL) {
-		if (now >= message->mExecTimestamp) {
-			mHeadMessage = message->mNextMessage;
-			return message;
+Message* MessageQueue::getNextMessage(uint64_t now, Message& message) {
+	Message* nextMessage = mHeadMessage;
+	if (nextMessage != NULL) {
+		if (now >= nextMessage->mExecTimestamp) {
+			mHeadMessage = nextMessage->mNextMessage;
+			message = *nextMessage;
+			nextMessage->recycle();
+			return &message;
 		}
 	}
 	return NULL;
@@ -135,7 +142,7 @@ bool MessageQueue::removeMessages(Handler* handler) {
 	return foundMessage;
 }
 
-bool MessageQueue::removeMessages(Handler* handler, int16_t what) {
+bool MessageQueue::removeMessages(Handler* handler, int32_t what) {
 	if (handler == NULL) {
 		return false;
 	}
@@ -174,7 +181,7 @@ bool MessageQueue::removeMessages(Handler* handler, int16_t what) {
 	return foundMessage;
 }
 
-bool MessageQueue::removeMessage(Handler* handler, Message* message) {
+bool MessageQueue::removeMessage(Handler* handler, const Message* message) {
 	if (handler == NULL || message == NULL) {
 		return false;
 	}
@@ -213,6 +220,14 @@ bool MessageQueue::removeMessage(Handler* handler, Message* message) {
 	mCondVarLock.unlock();
 
 	return foundMessage;
+}
+
+void MessageQueue::quit() {
+	AutoLock autoLock(mCondVarLock);
+	if (mQuiting) {
+		return;
+	}
+	mQuiting = true;
 }
 
 } /* namespace mindroid */

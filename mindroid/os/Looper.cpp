@@ -17,8 +17,8 @@
 #include "mindroid/os/Looper.h"
 #include "mindroid/os/Handler.h"
 #include "mindroid/os/Message.h"
+#include "mindroid/util/Assert.h"
 #include <new>
-#include <assert.h>
 
 namespace mindroid {
 
@@ -29,7 +29,8 @@ int Looper::sNumLoopers = 0;
 Lock Looper::sLock;
 
 Looper::Looper() :
-		mMessageQueue() {
+		mMessageQueue(),
+		mRunnableQueue(*this) {
 }
 
 bool Looper::prepare() {
@@ -41,7 +42,7 @@ bool Looper::prepare() {
 		}
 	}
 	AutoLock autoLock(sLock);
-	assert(sNumLoopers < MAX_NUM_LOOPERS);
+	Assert::assertTrue(sNumLoopers < MAX_NUM_LOOPERS);
 	if (i >= MAX_NUM_LOOPERS) {
 		i = sNumLoopers;
 	}
@@ -79,21 +80,19 @@ void Looper::loop() {
 	if (me != NULL) {
 		MessageQueue& mq = me->mMessageQueue;
 		while (true) {
-			Message& message = mq.dequeueMessage();
-			if (message.mHandler == NULL) {
+			Message* message = mq.dequeueMessage(me->mMessage);
+			if (message == NULL) {
 				return;
 			}
-			Handler* handler = message.mHandler;
-			Message clone(message);
-			clone.mHandler = NULL;
-			message.recycle();
-			handler->dispatchMessage(clone);
+			Handler* handler = message->mHandler;
+			message->mHandler = NULL;
+			handler->dispatchMessage(*message);
 		}
 	}
 }
 
 void Looper::quit() {
-	mMessageQueue.enqueueMessage(mQuitMessage, 0);
+	mMessageQueue.quit();
 }
 
 } /* namespace mindroid */

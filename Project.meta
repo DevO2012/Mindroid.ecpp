@@ -1,6 +1,6 @@
 Project {
 
-  LibraryConfig lib {
+  LibraryConfig Default {
     Files "**/*.cpp"
 	
     IncludeDir "."
@@ -11,13 +11,27 @@ Project {
 
     Toolchain {
 	  Compiler CPP {
-	    Flags "--cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork"
+	    Flags "--cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork"
 	  }
 	  Compiler C {
-	    Flags "--cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork"
+	    Flags "--cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork"
 	  }
 	  Compiler ASM {
 	    Flags "--cpu Cortex-M3 --pd \"__MICROLIB SETA 1\" -g --16 --apcs=interwork"
+	  }	
+	}
+  }
+
+  LibraryConfig Release, extends: Default {
+    Toolchain {
+	  Compiler CPP {
+	    Flags "--cpu Cortex-M3 -D__MICROLIB -DNDEBUG -O3 --apcs=interwork"
+	  }
+	  Compiler C {
+	    Flags "--cpu Cortex-M3 -D__MICROLIB -DNDEBUG -O3 --apcs=interwork"
+	  }
+	  Compiler ASM {
+	    Flags "--cpu Cortex-M3 --pd \"__MICROLIB SETA 1\" --16 --apcs=interwork"
 	  }	
 	}
   }

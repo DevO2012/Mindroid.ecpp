@@ -20,6 +20,7 @@
 #include <cmsis_os.h>
 #include "mindroid/os/Message.h"
 #include "mindroid/os/MessageQueue.h"
+#include "mindroid/os/RunnableQueue.h"
 #include "mindroid/util/Utils.h"
 #include "mindroid/Mindroid.h"
 
@@ -36,12 +37,17 @@ public:
 	static void loop();
 	void quit();
 
-private:
-	Looper();
 	MessageQueue& myMessageQueue() {
 		return mMessageQueue;
 	}
-	
+
+private:
+	Looper();
+
+	RunnableQueue& myRunnableQueue() {
+		return mRunnableQueue;
+	}
+
 	static uint8_t sLooperHeapMemory[];
 	static Looper* sLoopers[];
 	static osThreadId sLooperThreadIds[];
@@ -49,7 +55,8 @@ private:
 	static Lock sLock;
 
 	MessageQueue mMessageQueue;
-	Message mQuitMessage;
+	RunnableQueue mRunnableQueue;
+	Message mMessage;
 
 	friend class Handler;
 

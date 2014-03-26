@@ -17,7 +17,7 @@
 #include "mindroid/os/CondVar.h"
 #include "mindroid/os/Lock.h"
 #include "mindroid/os/Clock.h"
-#include <assert.h>
+#include "mindroid/util/Assert.h"
 
 namespace mindroid {
 
@@ -33,7 +33,7 @@ void CondVar::wait() {
 
 void CondVar::wait(uint32_t timeout) {
 	mCondVarLock.unlock();
-	assert(timeout > 0);
+	Assert::assertTrue(timeout > 0);
 	mSemaphore.wait(timeout);
 	mCondVarLock.lock();
 }

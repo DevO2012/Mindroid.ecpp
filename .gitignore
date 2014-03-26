@@ -3,4 +3,6 @@
 .bake
 Debug
 Debug_Main
+Release_Main
 .bake
+.settings
