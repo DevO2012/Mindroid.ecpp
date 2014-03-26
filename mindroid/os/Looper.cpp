@@ -30,7 +30,8 @@ int Looper::sNumLoopers = 0;
 Lock Looper::sLock;
 
 Looper::Looper(TaskType taskId, AlarmType alarmId, EventMaskType eventId) :
-		mMessageQueue(taskId, alarmId, eventId) {
+		mMessageQueue(taskId, alarmId, eventId),
+		mRunnableQueue(*this) {
 }
 
 bool Looper::prepare(TaskType taskId, AlarmType alarmId, EventMaskType eventId) {
@@ -82,21 +83,19 @@ void Looper::loop() {
 	if (me != NULL) {
 		MessageQueue& mq = me->mMessageQueue;
 		while (true) {
-			Message& message = mq.dequeueMessage();
-			if (message.mHandler == NULL) {
+			Message* message = mq.dequeueMessage(me->mMessage);
+			if (message == NULL) {
 				return;
 			}
-			Handler* handler = message.mHandler;
-			Message clone(message);
-			clone.mHandler = NULL;
-			message.recycle();
-			handler->dispatchMessage(clone);
+			Handler* handler = message->mHandler;
+			message->mHandler = NULL;
+			handler->dispatchMessage(*message);
 		}
 	}
 }
 
 void Looper::quit() {
-	mMessageQueue.enqueueMessage(mQuitMessage, 0);
+	mMessageQueue.quit();
 }
 
 } /* namespace mindroid */

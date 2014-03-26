@@ -20,6 +20,7 @@
 #include <os.h>
 #include "mindroid/os/Message.h"
 #include "mindroid/os/MessageQueue.h"
+#include "mindroid/os/RunnableQueue.h"
 #include "mindroid/Mindroid.h"
 #include "mindroid/util/Utils.h"
 
@@ -36,10 +37,15 @@ public:
 	static void loop();
 	void quit();
 
-private:
-	Looper(TaskType taskId, AlarmType alarmId, EventMaskType eventId);
 	MessageQueue& myMessageQueue() {
 		return mMessageQueue;
+	}
+
+private:
+	Looper(TaskType taskId, AlarmType alarmId, EventMaskType eventId);
+
+	RunnableQueue& myRunnableQueue() {
+		return mRunnableQueue;
 	}
 
 	static uint8_t sLooperHeapMemory[];
@@ -49,7 +55,8 @@ private:
 	static Lock sLock;
 
 	MessageQueue mMessageQueue;
-	Message mQuitMessage;
+	RunnableQueue mRunnableQueue;
+	Message mMessage;
 
 	friend class Handler;
 

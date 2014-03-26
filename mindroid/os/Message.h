@@ -29,14 +29,16 @@ class Message {
 public:
     Message();
 	Message(Handler& handler);
-	Message(Handler& handler, int16_t what);
-	Message(Handler& handler, int16_t what, int32_t arg1, int32_t arg2);
-	Message(Handler& handler, int16_t what, void* obj);
+	Message(Handler& handler, const int32_t what);
+	Message(Handler& handler, const int32_t what, const int32_t arg1, const int32_t arg2);
+	Message(Handler& handler, const int32_t what, void* const obj);
 
-    static bool obtain(Message& message, Handler& handler);
-    static bool obtain(Message& message, Handler& handler, int16_t what);
-    static bool obtain(Message& message, Handler& handler, int16_t what, int32_t arg1, int32_t arg2);
-    static bool obtain(Message& message, Handler& handler, int16_t what, void* obj);
+	Message& operator=(const Message& message);
+
+    static Message* obtain(Message& message, Handler& handler);
+    static Message* obtain(Message& message, Handler& handler, const int32_t what);
+    static Message* obtain(Message& message, Handler& handler, const int32_t what, const int32_t arg1, const int32_t arg2);
+    static Message* obtain(Message& message, Handler& handler, const int32_t what, void* const obj);
 
     Handler* getHandler() const {
     	return mHandler;
@@ -44,29 +46,32 @@ public:
 
     bool sendToTarget();
 
-    int16_t what;
+    int32_t what;
     int32_t arg1;
     int32_t arg2;
     void* obj;
 
-protected:
-    Message(const Message& message);
-
-	void recycle();
-    void clear();
-
 private:
-    inline uint64_t getExecTimestamp() {
+    inline bool isInUse() {
+		AutoLock autoLock(mLock);
+		return mExecTimestamp != 0;
+	}
+
+    inline void recycle() {
     	AutoLock autoLock(mLock);
-    	return mExecTimestamp;
+    	mExecTimestamp = 0;
+    	mNextMessage = NULL;
     }
 
-    mutable Lock mLock;
+    void clear();
+
     uint64_t mExecTimestamp; // milliseconds
     Handler* mHandler;
     Message* mNextMessage;
+    mutable Lock mLock;
 
     friend class MessageQueue;
+    friend class RunnableQueue;
     friend class Looper;
 };
 

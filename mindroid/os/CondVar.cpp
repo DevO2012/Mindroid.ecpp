@@ -17,7 +17,7 @@
 #include "mindroid/os/CondVar.h"
 #include "mindroid/os/Lock.h"
 #include "mindroid/os/Clock.h"
-#include <assert.h>
+#include "mindroid/util/Assert.h"
 
 namespace mindroid {
 
@@ -57,7 +57,7 @@ void CondVar::notify() {
 
 void CondVar::notifyAll() {
 	bool notYetImplemented = true;
-	assert(!notYetImplemented);
+	Assert::assertTrue(!notYetImplemented);
 }
 
 } /* namespace mindroid */
