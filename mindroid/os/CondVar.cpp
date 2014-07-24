@@ -43,12 +43,8 @@ void CondVar::notify() {
 }
 
 void CondVar::notifyAll() {
-	int32_t i = osSemaphoreWait(mSemaphore.mSemaphoreId, 0);
-	osSemaphoreRelease(mSemaphore.mSemaphoreId);
-	while (i > 0) {
-		osSemaphoreRelease(mSemaphore.mSemaphoreId);
-		i--;
-	}
+	bool notYetImplemented = true;
+	Assert::assertTrue(!notYetImplemented);
 }
 
 } /* namespace mindroid */

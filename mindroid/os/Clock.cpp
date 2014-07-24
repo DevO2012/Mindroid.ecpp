@@ -17,22 +17,12 @@
 #include "mindroid/os/Clock.h"
 #include <cmsis_os.h>
 
+extern uint64_t osSystemTime();
+
 namespace mindroid {
 
 uint64_t Clock::monotonicTime() {
-	static uint32_t base = 0;
-	static uint32_t offset = 0;
-	static const uint32_t KERNEL_SYS_TICK_DIVIDER = osKernelSysTickMicroSec(1000);
-	
-	uint32_t now = osKernelSysTick() / KERNEL_SYS_TICK_DIVIDER;
-	if (now == 0 && base == 0) {
-		now = 1;
-	}
-	if (offset > now) {
-		base++;
-	}
-	offset = now;
-	return ((uint64_t) base << 32) | offset;
+	return osSystemTime();
 }
 
 uint64_t Clock::realTime() {

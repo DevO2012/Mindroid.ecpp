@@ -39,29 +39,31 @@ bool MessageQueue::enqueueMessage(Message& message, uint64_t execTimestamp) {
 		return false;
 	}
 
-	AutoLock autoLock(mCondVarLock);
 	{
-		AutoLock autoLock(message.mLock);
-		if (message.mExecTimestamp != 0) {
+		AutoLock autoLock(mCondVarLock);
+		{
+			AutoLock autoLock(message.mLock);
+			if (message.mExecTimestamp != 0) {
+				return false;
+			}
+			message.mExecTimestamp = execTimestamp;
+		}
+		if (mQuiting) {
 			return false;
 		}
-		message.mExecTimestamp = execTimestamp;
-	}
-	if (mQuiting) {
-		return false;
-	}
-	Message* curMessage = mHeadMessage;
-	if (curMessage == NULL || execTimestamp < curMessage->mExecTimestamp) {
-		message.mNextMessage = curMessage;
-		mHeadMessage = &message;
-	} else {
-		Message* prevMessage = NULL;
-		while (curMessage != NULL && curMessage->mExecTimestamp <= execTimestamp) {
-			prevMessage = curMessage;
-			curMessage = curMessage->mNextMessage;
+		Message* curMessage = mHeadMessage;
+		if (curMessage == NULL || execTimestamp < curMessage->mExecTimestamp) {
+			message.mNextMessage = curMessage;
+			mHeadMessage = &message;
+		} else {
+			Message* prevMessage = NULL;
+			while (curMessage != NULL && curMessage->mExecTimestamp <= execTimestamp) {
+				prevMessage = curMessage;
+				curMessage = curMessage->mNextMessage;
+			}
+			message.mNextMessage = prevMessage->mNextMessage;
+			prevMessage->mNextMessage = &message;
 		}
-		message.mNextMessage = prevMessage->mNextMessage;
-		prevMessage->mNextMessage = &message;
 	}
 	mCondVar.notify();
 	return true;
@@ -69,12 +71,13 @@ bool MessageQueue::enqueueMessage(Message& message, uint64_t execTimestamp) {
 
 Message* MessageQueue::dequeueMessage(Message& message) {
 	while (true) {
+		uint64_t now = Clock::monotonicTime();
+
 		AutoLock autoLock(mCondVarLock);
 		if (mQuiting) {
 			return NULL;
 		}
 
-		uint64_t now = Clock::monotonicTime();
 		if (getNextMessage(now, message) != NULL) {
 			return &message;
 		}

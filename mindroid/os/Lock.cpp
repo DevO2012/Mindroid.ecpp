@@ -15,25 +15,34 @@
  */
 
 #include "mindroid/os/Lock.h"
-#include "mindroid/os/Clock.h"
+#include "mindroid/util/Assert.h"
+#include <cmsis_os.h>
 
 namespace mindroid {
 
+uint32_t Lock::sCounter = 0;
+
 Lock::Lock() {
-	mMutex.mutex = mMutexData;
-	mMutexId = osMutexCreate(&mMutex);
 }
 
 Lock::~Lock() {
-	osMutexDelete(mMutexId);
 }
 
 bool Lock::lock() {
-	return osMutexWait(mMutexId, osWaitForever) == osOK;
+	if (sCounter == 0) {
+		__disable_irq();
+	}
+	sCounter++;
+	return true;
 }
 
 void Lock::unlock() {
-	osMutexRelease(mMutexId);
+	Assert::assertTrue(sCounter != 0);
+
+	sCounter--;
+	if (sCounter == 0) {
+		__enable_irq();
+	}
 }
 
 } /* namespace mindroid */
