@@ -43,22 +43,26 @@ bool Looper::prepare(TaskType taskId, AlarmType alarmId, EventMaskType eventId) 
 			break;
 		}
 	}
-	AutoLock autoLock(sLock);
-	assert(sNumLoopers < MAX_NUM_LOOPERS);
-	if (i >= MAX_NUM_LOOPERS) {
-		i = sNumLoopers;
+	Looper* looper = NULL;
+	{
+		AutoLock autoLock(sLock);
+		Assert::assertTrue(sNumLoopers < MAX_NUM_LOOPERS);
+		if (i >= MAX_NUM_LOOPERS) {
+			i = sNumLoopers;
+		}
+		if (sLoopers[i] == NULL) {
+			looper = reinterpret_cast<Looper*>(sLooperHeapMemory + i * sizeof(Looper));
+			sLoopers[i] = looper;
+			sLooperThreadIds[i] = threadId;
+			sNumLoopers++;
+		}  else {
+			// There should be only one Looper per task.
+			return false;
+		}
 	}
-	if (sLoopers[i] == NULL) {
-		Looper* looper = reinterpret_cast<Looper*>(sLooperHeapMemory + i * sizeof(Looper));
-		new (looper) Looper(taskId, alarmId, eventId);
-		sLoopers[i] = looper;
-		sLooperThreadIds[i] = threadId;
-		sNumLoopers++;
-		return true;
-	}  else {
-		// There should be only one Looper per task.
-		return false;
-	}
+	Assert::assertTrue(looper != NULL);
+	new (looper) Looper(taskId, alarmId, eventId);
+	return true;
 }
 
 Looper* Looper::myLooper() {

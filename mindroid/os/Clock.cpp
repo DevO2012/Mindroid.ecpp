@@ -19,12 +19,15 @@
 
 namespace mindroid {
 
+Lock Clock::sLock;
+
 uint64_t Clock::monotonicTime() {
 	static uint32_t base = 0;
 	static uint32_t offset = 0;
 
 	TickType now;
 	GetCounterValue(counter_1_ms, &now);
+	sLock.lock();
 	if (now == 0 && base == 0) {
 		now = 1;
 	}
@@ -32,7 +35,9 @@ uint64_t Clock::monotonicTime() {
 		base++;
 	}
 	offset = now;
-	return ((uint64_t) base << 32) | offset;
+	uint64_t time = ((uint64_t) base << 32) | offset;
+	sLock.unlock();
+	return time;
 }
 
 uint64_t Clock::realTime() {

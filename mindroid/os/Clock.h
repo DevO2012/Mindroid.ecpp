@@ -18,6 +18,7 @@
 #define MINDROID_CLOCK_H_
 
 #include <stdint.h>
+#include "mindroid/os/Lock.h"
 #include "mindroid/util/Utils.h"
 
 #define CLOCK_REALTIME  0
@@ -36,6 +37,8 @@ public:
 	static uint64_t realTime(); // milliseconds
 
 private:
+	static Lock sLock;
+
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Clock)
 };
 

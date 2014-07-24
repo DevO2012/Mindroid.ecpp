@@ -46,17 +46,17 @@ public:
 
     bool sendToTarget();
 
+    inline bool isInUse() {
+		AutoLock autoLock(mLock);
+		return mExecTimestamp != 0;
+	}
+
     int32_t what;
     int32_t arg1;
     int32_t arg2;
     void* obj;
 
 private:
-    inline bool isInUse() {
-		AutoLock autoLock(mLock);
-		return mExecTimestamp != 0;
-	}
-
     inline void recycle() {
     	AutoLock autoLock(mLock);
     	mExecTimestamp = 0;
