@@ -23,8 +23,8 @@ namespace mindroid {
 
 RunnableQueue::RunnableQueue(Looper& looper) :
 		Handler(looper),
-		mMessageQueue(looper.myMessageQueue()) {
-	Message::obtain(mMessage, *this, MSG_RUNNABLE);
+		mMessageQueue(looper.myMessageQueue()),
+		mMessage(*this, MSG_RUNNABLE) {
 }
 
 RunnableQueue::~RunnableQueue() {
