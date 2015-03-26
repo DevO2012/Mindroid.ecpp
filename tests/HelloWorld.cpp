@@ -1,4 +1,6 @@
+
 #include <stdio.h>
+
 #include "mindroid/os/Message.h"
 #include "mindroid/os/LooperThread.h"
 #include "mindroid/os/Closure.h"
