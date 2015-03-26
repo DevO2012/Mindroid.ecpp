@@ -19,6 +19,11 @@
 #include "mindroid/os/Lock.h"
 #include "mindroid/os/Clock.h"
 
+//not supported on windows 
+#ifdef _WIN32
+#define pthread_condattr_setclock()
+#endif
+
 namespace mindroid {
 
 CondVar::CondVar(Lock& lock) :

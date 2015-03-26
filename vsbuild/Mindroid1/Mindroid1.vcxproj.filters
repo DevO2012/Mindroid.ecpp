@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="mindroid">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="mindroid\util">
+      <UniqueIdentifier>{e4bc2399-cae9-410f-80b3-a89ce04f5f29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mindroid\app">
+      <UniqueIdentifier>{340034fe-b319-4bda-b53d-61a0ae6be910}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mindroid\os">
+      <UniqueIdentifier>{a7e397a5-ee5d-4760-9194-eafcafadb7b2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\mindroid\tests\HelloWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mindroid\tests\Test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mindroid\util\Assert.cpp">
+      <Filter>mindroid\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mindroid\util\Log.cpp">
+      <Filter>mindroid\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mindroid\util\Logger.cpp">
+      <Filter>mindroid\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mindroid\app\Process.cpp">
+      <Filter>mindroid\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mindroid\os\Clock.cpp">
+      <Filter>mindroid\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mindroid\os\CondVar.cpp">
+      <Filter>mindroid\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mindroid\os\Handler.cpp">
+      <Filter>mindroid\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mindroid\os\Lock.cpp">
+      <Filter>mindroid\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mindroid\os\Looper.cpp">
+      <Filter>mindroid\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mindroid\os\Message.cpp">
+      <Filter>mindroid\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mindroid\os\MessageQueue.cpp">
+      <Filter>mindroid\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mindroid\os\RunnableQueue.cpp">
+      <Filter>mindroid\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\mindroid\os\Thread.cpp">
+      <Filter>mindroid\os</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\mindroid\util\Assert.h">
+      <Filter>mindroid\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\util\Buffer.h">
+      <Filter>mindroid\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\util\CircularBuffer.h">
+      <Filter>mindroid\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\util\Log.h">
+      <Filter>mindroid\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\util\Logger.h">
+      <Filter>mindroid\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\util\TsSpScCircularBuffer.h">
+      <Filter>mindroid\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\util\Utils.h">
+      <Filter>mindroid\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\app\Process.h">
+      <Filter>mindroid\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\app\Service.h">
+      <Filter>mindroid\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\os\AtomicInteger.h">
+      <Filter>mindroid\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\os\Clock.h">
+      <Filter>mindroid\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\os\Closure.h">
+      <Filter>mindroid\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\os\CondVar.h">
+      <Filter>mindroid\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\os\Delegate.h">
+      <Filter>mindroid\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\os\Handler.h">
+      <Filter>mindroid\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\os\Lock.h">
+      <Filter>mindroid\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\os\Looper.h">
+      <Filter>mindroid\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\os\LooperThread.h">
+      <Filter>mindroid\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\os\Message.h">
+      <Filter>mindroid\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\os\MessageQueue.h">
+      <Filter>mindroid\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\os\Runnable.h">
+      <Filter>mindroid\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\os\RunnableQueue.h">
+      <Filter>mindroid\os</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\mindroid\os\Thread.h">
+      <Filter>mindroid\os</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
