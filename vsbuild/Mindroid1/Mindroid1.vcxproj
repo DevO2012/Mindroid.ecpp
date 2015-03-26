@@ -156,13 +156,13 @@
     <ClCompile Include="..\..\mindroid\os\MessageQueue.cpp" />
     <ClCompile Include="..\..\mindroid\os\RunnableQueue.cpp" />
     <ClCompile Include="..\..\mindroid\os\Thread.cpp" />
-    <ClCompile Include="..\..\mindroid\tests\HelloWorld.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\mindroid\tests\Test.cpp" />
     <ClCompile Include="..\..\mindroid\util\Assert.cpp" />
     <ClCompile Include="..\..\mindroid\util\Log.cpp" />
     <ClCompile Include="..\..\mindroid\util\Logger.cpp" />
+    <ClCompile Include="..\..\tests\HelloWorld.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\tests\Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\mindroid\app\Process.h" />

@@ -24,12 +24,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\mindroid\tests\HelloWorld.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\mindroid\tests\Test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\mindroid\util\Assert.cpp">
       <Filter>mindroid\util</Filter>
     </ClCompile>
@@ -68,6 +62,12 @@
     </ClCompile>
     <ClCompile Include="..\..\mindroid\os\Thread.cpp">
       <Filter>mindroid\os</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tests\HelloWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tests\Test.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
