@@ -133,7 +133,7 @@
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;PTW32_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\;.\;..\..\;..\..\pthread-win32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -143,6 +143,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\pthread-win32\x64_MSVC2013.Debug</AdditionalLibraryDirectories>
       <AdditionalDependencies>pthread_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -159,10 +160,10 @@
     <ClCompile Include="..\..\mindroid\util\Assert.cpp" />
     <ClCompile Include="..\..\mindroid\util\Log.cpp" />
     <ClCompile Include="..\..\mindroid\util\Logger.cpp" />
-    <ClCompile Include="..\..\tests\HelloWorld.cpp">
+    <ClCompile Include="..\..\tests\HelloWorld.cpp" />
+    <ClCompile Include="..\..\tests\Test.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\tests\Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\mindroid\app\Process.h" />
